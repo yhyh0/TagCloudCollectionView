@@ -29,8 +29,8 @@ static NSString * const reuseIdentifier = @"Cell";
 
 - (instancetype)init {
     self = [super init];
-    self.sampleData = @[ @{KeyR:@30}, @{KeyR:@70}, @{KeyR:@70}, @{KeyR:@90}, @{KeyR:@60}, @{KeyR:@100}, @{KeyR:@70} ].mutableCopy;
-    while (self.sampleData.count < 50) {
+    self.sampleData = @[ @{KeyR:@80}, @{KeyR:@70}, @{KeyR:@70}, @{KeyR:@90}, @{KeyR:@60}, @{KeyR:@100}, @{KeyR:@70} ].mutableCopy;
+    while (self.sampleData.count < 80) {
         self.sampleData = [self.sampleData arrayByAddingObjectsFromArray:self.sampleData].mutableCopy;
     }
     

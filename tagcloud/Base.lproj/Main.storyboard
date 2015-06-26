@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="rC1-4Q-aZE">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="295"/>
                                 <collectionViewLayout key="collectionViewLayout" id="Abq-Yg-IN9" customClass="TagCloudCollectionViewLayout"/>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="Cell" id="wV2-PK-2SA">
@@ -34,7 +34,7 @@
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstItem="gUu-5F-G6f" firstAttribute="leading" secondItem="wV2-PK-2SA" secondAttribute="leadingMargin" constant="-8" id="2cp-Lo-ycI"/>
                                             <constraint firstAttribute="bottomMargin" secondItem="gUu-5F-G6f" secondAttribute="bottom" constant="-8" id="6B2-hR-eQf"/>
