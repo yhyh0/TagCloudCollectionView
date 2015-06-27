@@ -36,7 +36,7 @@ static const CGFloat MARGIN = 10.f;
 
 
 
-- (CGFloat)maxEdgeXWithItemSize:(CGSize)itemSize startingY:(int)startingY edges:(NSArray *)edges{
+- (CGFloat)maxEdgeXInItemRangeWithItemSize:(CGSize)itemSize startingY:(int)startingY edges:(NSArray *)edges{
     CGFloat maxEdgeXInItemRange = .0f;
     for (int movingYInItemRange = startingY; movingYInItemRange < (startingY + itemSize.height + 2 * MARGIN); movingYInItemRange++) {
         CGFloat edgeX = [edges[movingYInItemRange] floatValue];
@@ -50,7 +50,7 @@ static const CGFloat MARGIN = 10.f;
 - (void)updateItemCellFrame:(CGRect *)framePointer fittingEdges:(NSArray *)edges{
     CGFloat maxY = self.collectionView.bounds.size.height - framePointer->size.height - 2 * MARGIN;
     for (int y = 0; y < maxY; y++) {
-        CGFloat maxEdgeXInItemRange = [self maxEdgeXWithItemSize:framePointer->size startingY:y edges:edges];
+        CGFloat maxEdgeXInItemRange = [self maxEdgeXInItemRangeWithItemSize:framePointer->size startingY:y edges:edges];
         if (framePointer->origin.x < .0f) { //left side
             if (fabs(maxEdgeXInItemRange) < fabs([self maxXForItemFrame:*framePointer])) {
                 framePointer->origin.x = maxEdgeXInItemRange - MARGIN - framePointer->size.width;
@@ -76,11 +76,24 @@ static const CGFloat MARGIN = 10.f;
 - (CGFloat)maxXForItemFrame:(CGRect)frame {
     CGFloat maxX;
     if (frame.origin.x < .0f) {
-        maxX = frame.origin.x - frame.size.width;
+        maxX = frame.origin.x;
     } else {
         maxX = frame.origin.x + frame.size.width;
     }
     return maxX;
+}
+
+- (void)updateMaxEdgesWithItemFrame:(CGRect)itemFrame {
+    CGFloat newX = [self maxXForItemFrame:itemFrame];
+    if (newX < .0f) {
+        if (newX < self.maxXLeft) {
+            self.maxXLeft = newX;
+        }
+    } else {
+        if (newX > self.maxXRight) {
+            self.maxXRight = newX;
+        }
+    }
 }
 
 - (void)prepareLayout {
@@ -93,39 +106,28 @@ static const CGFloat MARGIN = 10.f;
                                                     inSection:0];
         CGSize itemSize = [self.dataSource collectionViewLayout:self
                                            itemSizeForIndexPath:indexPath];
-        
+        CGRect itemFrame = CGRectMake(.0f, .0f, itemSize.width, itemSize.height);
+
+        NSMutableArray *edges;
         if (i % 2) {
-            CGRect itemFrame = CGRectMake(-INFINITY, .0f, itemSize.width, itemSize.height);
-
-            [self updateItemCellFrame:&itemFrame fittingEdges:self.leftEdges];
-            [self updateEdges:self.leftEdges withNewItemFrame:itemFrame];
-            CGFloat newX = itemFrame.origin.x + itemFrame.size.width;
-            if (newX > self.maxXLeft) {
-                self.maxXLeft = newX;
-            }
-            
-            UICollectionViewLayoutAttributes *layoutAttribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-            layoutAttribute.frame = itemFrame;
-            [self.layoutAttributes addObject:layoutAttribute];
+            itemFrame.origin.x = -INFINITY;
+            edges = self.leftEdges;
         } else {//0, 2, 4
-            CGRect itemFrame = CGRectMake(INFINITY, .0f, itemSize.width, itemSize.height);
-
-            [self updateItemCellFrame:&itemFrame fittingEdges:self.rightEdges];
-            [self updateEdges:self.rightEdges withNewItemFrame:itemFrame];
-            CGFloat newX = itemFrame.origin.x + itemFrame.size.width;
-            if (newX > self.maxXRight) {
-                self.maxXRight = newX;
-            }
-            
-            UICollectionViewLayoutAttributes *layoutAttribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-            layoutAttribute.frame = itemFrame;
-            [self.layoutAttributes addObject:layoutAttribute];
+            itemFrame.origin.x = INFINITY;
+            edges = self.rightEdges;
         }
+        [self updateItemCellFrame:&itemFrame fittingEdges:edges];
+        [self updateEdges:edges withNewItemFrame:itemFrame];
+        [self updateMaxEdgesWithItemFrame:itemFrame];
+        
+        UICollectionViewLayoutAttributes *layoutAttribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+        layoutAttribute.frame = itemFrame;
+        [self.layoutAttributes addObject:layoutAttribute];
     }
     
     for (UICollectionViewLayoutAttributes *attributesItem in self.layoutAttributes) {
         CGRect frame = attributesItem.frame;
-        frame.origin.x = frame.origin.x + self.collectionViewContentSize.width / 2.f;
+        frame.origin.x = frame.origin.x + fabs(self.maxXLeft);
         attributesItem.frame = frame;
     }
 }
