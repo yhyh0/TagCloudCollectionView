@@ -15,7 +15,7 @@
 		2DC41DB31B3A79D2007ABA3C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DC41DB21B3A79D2007ABA3C /* Images.xcassets */; };
 		2DC41DB61B3A79D2007ABA3C /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DC41DB41B3A79D2007ABA3C /* LaunchScreen.xib */; };
 		2DC41DC21B3A79D2007ABA3C /* tagcloudTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC41DC11B3A79D2007ABA3C /* tagcloudTests.m */; };
-		2DC41DCD1B3A7A24007ABA3C /* CollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC41DCC1B3A7A24007ABA3C /* CollectionViewController.m */; };
+		2DC41DCD1B3A7A24007ABA3C /* TagCloudCollectionViewDataSourceDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DC41DCC1B3A7A24007ABA3C /* TagCloudCollectionViewDataSourceDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,8 +44,8 @@
 		2DC41DBB1B3A79D2007ABA3C /* tagcloudTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = tagcloudTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC41DC01B3A79D2007ABA3C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2DC41DC11B3A79D2007ABA3C /* tagcloudTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = tagcloudTests.m; sourceTree = "<group>"; };
-		2DC41DCB1B3A7A24007ABA3C /* CollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectionViewController.h; sourceTree = "<group>"; };
-		2DC41DCC1B3A7A24007ABA3C /* CollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CollectionViewController.m; sourceTree = "<group>"; };
+		2DC41DCB1B3A7A24007ABA3C /* TagCloudCollectionViewDataSourceDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TagCloudCollectionViewDataSourceDelegate.h; sourceTree = "<group>"; };
+		2DC41DCC1B3A7A24007ABA3C /* TagCloudCollectionViewDataSourceDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagCloudCollectionViewDataSourceDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,8 +91,8 @@
 				2DC41DAA1B3A79D2007ABA3C /* AppDelegate.m */,
 				2DA5FAD11B3A807E00BAD220 /* ViewController.h */,
 				2DA5FAD21B3A807E00BAD220 /* ViewController.m */,
-				2DC41DCB1B3A7A24007ABA3C /* CollectionViewController.h */,
-				2DC41DCC1B3A7A24007ABA3C /* CollectionViewController.m */,
+				2DC41DCB1B3A7A24007ABA3C /* TagCloudCollectionViewDataSourceDelegate.h */,
+				2DC41DCC1B3A7A24007ABA3C /* TagCloudCollectionViewDataSourceDelegate.m */,
 				2DA5FAD41B3C8B2000BAD220 /* TagCloudCollectionViewLayout.h */,
 				2DA5FAD51B3C8B2000BAD220 /* TagCloudCollectionViewLayout.m */,
 				2DC41DAF1B3A79D2007ABA3C /* Main.storyboard */,
@@ -229,7 +229,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DC41DCD1B3A7A24007ABA3C /* CollectionViewController.m in Sources */,
+				2DC41DCD1B3A7A24007ABA3C /* TagCloudCollectionViewDataSourceDelegate.m in Sources */,
 				2DC41DAB1B3A79D2007ABA3C /* AppDelegate.m in Sources */,
 				2DA5FAD31B3A807E00BAD220 /* ViewController.m in Sources */,
 				2DC41DA81B3A79D2007ABA3C /* main.m in Sources */,

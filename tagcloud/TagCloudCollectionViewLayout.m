@@ -14,6 +14,7 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
 @interface TagCloudCollectionViewLayout ()
 
 @property (nonatomic, strong) NSMutableArray *layoutAttributes;
+@property (nonatomic, strong) NSMutableArray *shiftedLayoutAttributes;
 @property (nonatomic, strong) NSMutableArray *rightEdges, *leftEdges;
 @property (nonatomic, assign) CGFloat maxXRight, maxXLeft;
 
@@ -22,10 +23,11 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
 @implementation TagCloudCollectionViewLayout
 
 - (void)prepareLayout {
-    self.layoutAttributes = @[].mutableCopy;
-    [self setUpInitialEdges];
-
-    for (NSInteger i = 0; i < [self.collectionView numberOfItemsInSection:0]; i++) {
+    [self setUpInitialValuesIfNeeded];
+    NSUInteger totalItemCount = [self.collectionView numberOfItemsInSection:0];
+    
+    NSMutableArray *mutableLayoutAttributes = @[].mutableCopy;
+    for (NSInteger i = self.layoutAttributes.count; i < totalItemCount; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i
                                                     inSection:0];
         CGSize itemSize = [self.dataSource collectionViewLayout:self
@@ -35,9 +37,10 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
         
         [self updateItemCellFrame:&itemFrame fittingEdges:edges];
         [self updateEdges:edges withNewItemFrame:itemFrame];
-        [self addLayoutAttributesWithIndexPath:indexPath itemFrame:itemFrame];
+        UICollectionViewLayoutAttributes *newAttributes = [self addLayoutAttributesWithIndexPath:indexPath itemFrame:itemFrame];
+        [mutableLayoutAttributes addObject:newAttributes];
     }
-    [self moveAllLayoutAttributeFramesIntoCanvas];
+    [self makeShiftedLayoutAttributes];
 }
 
 - (CGSize)collectionViewContentSize {
@@ -45,11 +48,11 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
 }
 
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
-    return self.layoutAttributes;
+    return self.shiftedLayoutAttributes;
 }
 
 - (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return self.layoutAttributes[indexPath.item];
+    return self.shiftedLayoutAttributes[indexPath.item];
 }
 
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity {
@@ -68,18 +71,23 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
 #pragma mark -
 #pragma mark Helpers
 
-- (void)setUpInitialEdges {
+- (void)setUpInitialValuesIfNeeded {
+    self.layoutAttributes = self.layoutAttributes ?: @[].mutableCopy;
+
     int height = (int)ceil(self.collectionView.bounds.size.height);
-    self.rightEdges = @[].mutableCopy;
-    for (int i = 0; i < height; i++) {
-        [self.rightEdges addObject:@(0)];
-        
+    if (!self.rightEdges) {
+        self.rightEdges = @[].mutableCopy;
+        for (int i = 0; i < height; i++) {
+            [self.rightEdges addObject:@(0)];
+            
+        }
     }
-    self.leftEdges = @[].mutableCopy;
-    for (int i = 0; i < height; i++) {
-        [self.leftEdges addObject:@(0)];
+    if (!self.leftEdges) {
+        self.leftEdges = @[].mutableCopy;
+        for (int i = 0; i < height; i++) {
+            [self.leftEdges addObject:@(0)];
+        }
     }
-    self.maxXRight = .0f;;
 }
 
 - (CGFloat)maxEdgeXInItemRangeWithItemSize:(CGSize)itemSize startingY:(int)startingY edges:(NSArray *)edges{
@@ -98,12 +106,14 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
     for (int y = 0; y < maxY; y++) {
         CGFloat maxEdgeXInItemRange = [self maxEdgeXInItemRangeWithItemSize:framePointer->size startingY:y edges:edges];
         if (framePointer->origin.x < .0f) { //left side
-            if (fabs(maxEdgeXInItemRange) < fabs([self maxXForItemFrame:*framePointer])) {
+            CGFloat currentItemMinX = framePointer->origin.x + MARGIN + framePointer->size.width;
+            if (maxEdgeXInItemRange > currentItemMinX + MARGIN + framePointer->size.width) {
                 framePointer->origin.x = maxEdgeXInItemRange - MARGIN - framePointer->size.width;
                 framePointer->origin.y = y + MARGIN;
             }
         } else {
-            if (maxEdgeXInItemRange < framePointer->origin.x) {
+            CGFloat currentItemMinX = framePointer->origin.x - MARGIN;
+            if (maxEdgeXInItemRange < currentItemMinX) {
                 framePointer->origin.x = maxEdgeXInItemRange + MARGIN;
                 framePointer->origin.y = y + MARGIN;
             }
@@ -143,17 +153,21 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
     }
 }
 
-- (void)addLayoutAttributesWithIndexPath:(NSIndexPath *)indexPath itemFrame:(CGRect)itemFrame {
+- (UICollectionViewLayoutAttributes *)addLayoutAttributesWithIndexPath:(NSIndexPath *)indexPath itemFrame:(CGRect)itemFrame {
     UICollectionViewLayoutAttributes *layoutAttribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
     layoutAttribute.frame = itemFrame;
     [self.layoutAttributes addObject:layoutAttribute];
+    return layoutAttribute;
 }
 
-- (void)moveAllLayoutAttributeFramesIntoCanvas {
+- (void)makeShiftedLayoutAttributes {
+    self.shiftedLayoutAttributes = @[].mutableCopy;
     for (UICollectionViewLayoutAttributes *attributesItem in self.layoutAttributes) {
-        CGRect frame = attributesItem.frame;
+        UICollectionViewLayoutAttributes *newAttributes = attributesItem.copy;
+        CGRect frame = newAttributes.frame;
         frame.origin.x = frame.origin.x + fabs(self.maxXLeft);
-        attributesItem.frame = frame;
+        newAttributes.frame = frame;
+        [self.shiftedLayoutAttributes addObject:newAttributes];
     }
 }
 

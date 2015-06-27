@@ -6,17 +6,16 @@
 //  Copyright (c) 2015 Yin Hou. All rights reserved.
 //
 
-#import "CollectionViewController.h"
+#import "TagCloudCollectionViewDataSourceDelegate.h"
 
 static NSString *KeyR = @"KeyR";
 
-@interface CollectionViewController ()
+@interface TagCloudCollectionViewDataSourceDelegate ()
 
-@property (nonatomic, strong) NSMutableArray *sampleData;
 
 @end
 
-@implementation CollectionViewController
+@implementation TagCloudCollectionViewDataSourceDelegate
 
 static NSString * const reuseIdentifier = @"Cell";
 
@@ -29,44 +28,10 @@ static NSString * const reuseIdentifier = @"Cell";
 
 - (instancetype)init {
     self = [super init];
-    self.sampleData = @[ @{KeyR:@80}, @{KeyR:@70}, @{KeyR:@70}, @{KeyR:@90}, @{KeyR:@60}, @{KeyR:@100}, @{KeyR:@70} ].mutableCopy;
-
-    
+    self.sampleData = @[ @{KeyR:@70}, @{KeyR:@90}, @{KeyR:@50}, @{KeyR:@100}, @{KeyR:@70}, @{KeyR:@60}].mutableCopy;
     return self;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-        [self.collectionView performBatchUpdates:^{
-            NSInteger initialCount = self.sampleData.count;
-            while (self.sampleData.count < 50) {
-                self.sampleData = [self.sampleData arrayByAddingObjectsFromArray:self.sampleData].mutableCopy;
-            }
-            NSMutableArray *indesPaths = @[].mutableCopy;
-            for (NSInteger i = initialCount; i < self.sampleData.count; i++) {
-                [indesPaths addObject:[NSIndexPath indexPathForItem:i inSection:0]];
-            }
-            [self.collectionView insertItemsAtIndexPaths:indesPaths.copy];
-        } completion:nil];
-    });
-    
-
-    // Uncomment the following line to preserve selection between presentations
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Register cell classes
-//    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
-    
-    // Do any additional setup after loading the view.
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
 /*
 #pragma mark - Navigation
