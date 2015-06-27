@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="rC1-4Q-aZE">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="rC1-4Q-aZE">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="295"/>
                                 <collectionViewLayout key="collectionViewLayout" id="Abq-Yg-IN9" customClass="TagCloudCollectionViewLayout"/>
                                 <cells>
@@ -46,6 +46,12 @@
                             </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="rC1-4Q-aZE" firstAttribute="leading" secondItem="6qC-Hh-4XZ" secondAttribute="leadingMargin" constant="-16" id="Ff1-xH-FB7"/>
+                            <constraint firstItem="7z4-AK-ziu" firstAttribute="top" secondItem="rC1-4Q-aZE" secondAttribute="bottom" constant="305" id="V6A-E4-XXQ"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="rC1-4Q-aZE" secondAttribute="trailing" constant="-16" id="pMo-EN-NCk"/>
+                            <constraint firstItem="rC1-4Q-aZE" firstAttribute="top" secondItem="ZdX-fQ-ggq" secondAttribute="bottom" constant="-20" id="xzv-Ff-di5"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="rC1-4Q-aZE" id="0gf-n8-BMD"/>
@@ -56,6 +62,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="circle" width="112" height="110"/>
+        <image name="circle" width="220" height="220"/>
     </resources>
 </document>

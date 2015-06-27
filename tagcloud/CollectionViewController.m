@@ -30,15 +30,28 @@ static NSString * const reuseIdentifier = @"Cell";
 - (instancetype)init {
     self = [super init];
     self.sampleData = @[ @{KeyR:@80}, @{KeyR:@70}, @{KeyR:@70}, @{KeyR:@90}, @{KeyR:@60}, @{KeyR:@100}, @{KeyR:@70} ].mutableCopy;
-    while (self.sampleData.count < 80) {
-        self.sampleData = [self.sampleData arrayByAddingObjectsFromArray:self.sampleData].mutableCopy;
-    }
+
     
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
+        [self.collectionView performBatchUpdates:^{
+            NSInteger initialCount = self.sampleData.count;
+            while (self.sampleData.count < 50) {
+                self.sampleData = [self.sampleData arrayByAddingObjectsFromArray:self.sampleData].mutableCopy;
+            }
+            NSMutableArray *indesPaths = @[].mutableCopy;
+            for (NSInteger i = initialCount; i < self.sampleData.count; i++) {
+                [indesPaths addObject:[NSIndexPath indexPathForItem:i inSection:0]];
+            }
+            [self.collectionView insertItemsAtIndexPaths:indesPaths.copy];
+        } completion:nil];
+    });
     
 
     // Uncomment the following line to preserve selection between presentations

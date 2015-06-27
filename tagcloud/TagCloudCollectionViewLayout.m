@@ -9,6 +9,7 @@
 #import "TagCloudCollectionViewLayout.h"
 
 static const CGFloat MARGIN = 10.f;
+static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
 
 @interface TagCloudCollectionViewLayout ()
 
@@ -19,6 +20,53 @@ static const CGFloat MARGIN = 10.f;
 @end
 
 @implementation TagCloudCollectionViewLayout
+
+- (void)prepareLayout {
+    self.layoutAttributes = @[].mutableCopy;
+    [self setUpInitialEdges];
+
+    for (NSInteger i = 0; i < [self.collectionView numberOfItemsInSection:0]; i++) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i
+                                                    inSection:0];
+        CGSize itemSize = [self.dataSource collectionViewLayout:self
+                                           itemSizeForIndexPath:indexPath];
+        CGRect itemFrame = CGRectMake(i % 2 ? -INFINITY : INFINITY, .0f, itemSize.width, itemSize.height);
+        NSMutableArray *edges = i % 2 ? self.leftEdges : self.rightEdges;
+        
+        [self updateItemCellFrame:&itemFrame fittingEdges:edges];
+        [self updateEdges:edges withNewItemFrame:itemFrame];
+        [self addLayoutAttributesWithIndexPath:indexPath itemFrame:itemFrame];
+    }
+    [self moveAllLayoutAttributeFramesIntoCanvas];
+}
+
+- (CGSize)collectionViewContentSize {
+    return CGSizeMake(self.maxXRight + fabs(self.maxXLeft), self.collectionView.bounds.size.height);
+}
+
+- (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
+    return self.layoutAttributes;
+}
+
+- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return self.layoutAttributes[indexPath.item];
+}
+
+- (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity {
+    CGPoint current = self.collectionView.contentOffset;
+    CGFloat distance = fabs(fabs(proposedContentOffset.x) - fabs(current.x));
+    distance = distance * SCROLLING_SLOW_DOWN_RATE;
+    
+    if (proposedContentOffset.x < current.x) {
+        current.x -= distance;
+    } else {
+        current.x += distance;
+    }
+    return current;
+}
+
+#pragma mark -
+#pragma mark Helpers
 
 - (void)setUpInitialEdges {
     int height = (int)ceil(self.collectionView.bounds.size.height);
@@ -33,8 +81,6 @@ static const CGFloat MARGIN = 10.f;
     }
     self.maxXRight = .0f;;
 }
-
-
 
 - (CGFloat)maxEdgeXInItemRangeWithItemSize:(CGSize)itemSize startingY:(int)startingY edges:(NSArray *)edges{
     CGFloat maxEdgeXInItemRange = .0f;
@@ -62,7 +108,7 @@ static const CGFloat MARGIN = 10.f;
                 framePointer->origin.y = y + MARGIN;
             }
         }
-
+        
     }
 }
 
@@ -71,6 +117,7 @@ static const CGFloat MARGIN = 10.f;
     for (int movingYInItemRange = 0; movingYInItemRange < frame.size.height; movingYInItemRange++) {
         mutableEdges[(int)ceil(frame.origin.y) + movingYInItemRange] = @(newX);
     }
+    [self updateMaxEdgesWithItemFrame:frame];
 }
 
 - (CGFloat)maxXForItemFrame:(CGRect)frame {
@@ -96,52 +143,18 @@ static const CGFloat MARGIN = 10.f;
     }
 }
 
-- (void)prepareLayout {
-    self.layoutAttributes = @[].mutableCopy;
-    [self setUpInitialEdges];
-    NSInteger count = [self.collectionView numberOfItemsInSection:0];
+- (void)addLayoutAttributesWithIndexPath:(NSIndexPath *)indexPath itemFrame:(CGRect)itemFrame {
+    UICollectionViewLayoutAttributes *layoutAttribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+    layoutAttribute.frame = itemFrame;
+    [self.layoutAttributes addObject:layoutAttribute];
+}
 
-    for (NSInteger i = 0; i < count; i++) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i
-                                                    inSection:0];
-        CGSize itemSize = [self.dataSource collectionViewLayout:self
-                                           itemSizeForIndexPath:indexPath];
-        CGRect itemFrame = CGRectMake(.0f, .0f, itemSize.width, itemSize.height);
-
-        NSMutableArray *edges;
-        if (i % 2) {
-            itemFrame.origin.x = -INFINITY;
-            edges = self.leftEdges;
-        } else {//0, 2, 4
-            itemFrame.origin.x = INFINITY;
-            edges = self.rightEdges;
-        }
-        [self updateItemCellFrame:&itemFrame fittingEdges:edges];
-        [self updateEdges:edges withNewItemFrame:itemFrame];
-        [self updateMaxEdgesWithItemFrame:itemFrame];
-        
-        UICollectionViewLayoutAttributes *layoutAttribute = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-        layoutAttribute.frame = itemFrame;
-        [self.layoutAttributes addObject:layoutAttribute];
-    }
-    
+- (void)moveAllLayoutAttributeFramesIntoCanvas {
     for (UICollectionViewLayoutAttributes *attributesItem in self.layoutAttributes) {
         CGRect frame = attributesItem.frame;
         frame.origin.x = frame.origin.x + fabs(self.maxXLeft);
         attributesItem.frame = frame;
     }
-}
-
-- (CGSize)collectionViewContentSize {
-    return CGSizeMake(self.maxXRight + fabs(self.maxXLeft), self.collectionView.bounds.size.height);
-}
-
-- (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
-    return self.layoutAttributes;
-}
-
-- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return self.layoutAttributes[indexPath.item];
 }
 
 @end
