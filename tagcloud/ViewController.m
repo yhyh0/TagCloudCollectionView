@@ -23,30 +23,33 @@
     self.collectionViewControllerDataSourceDalegate = [[TagCloudCollectionViewDataSourceDelegate alloc] init];
     self.collectionView.delegate = self.collectionViewControllerDataSourceDalegate;
     self.collectionView.dataSource = self.collectionViewControllerDataSourceDalegate;
-    
+    while (self.collectionViewControllerDataSourceDalegate.sampleData.count < 80) {
+        self.collectionViewControllerDataSourceDalegate.sampleData = [self.collectionViewControllerDataSourceDalegate.sampleData arrayByAddingObjectsFromArray:self.collectionViewControllerDataSourceDalegate.sampleData].mutableCopy;
+    }
+
     NSAssert([self.collectionView.collectionViewLayout isKindOfClass:TagCloudCollectionViewLayout.class], nil);
     TagCloudCollectionViewLayout *layout = (TagCloudCollectionViewLayout *)self.collectionView.collectionViewLayout;
     layout.dataSource = self.collectionViewControllerDataSourceDalegate;
     // Do any additional setup after loading the view.
-    
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        
-        [self.collectionView performBatchUpdates:^{
-            NSInteger initialCount = self.collectionViewControllerDataSourceDalegate.sampleData.count;
-            while (self.collectionViewControllerDataSourceDalegate.sampleData.count < 80) {
-                self.collectionViewControllerDataSourceDalegate.sampleData = [self.collectionViewControllerDataSourceDalegate.sampleData arrayByAddingObjectsFromArray:self.collectionViewControllerDataSourceDalegate.sampleData].mutableCopy;
-            }
-            NSMutableArray *indesPaths = @[].mutableCopy;
-            for (NSInteger i = initialCount; i < self.collectionViewControllerDataSourceDalegate.sampleData.count; i++) {
-                [indesPaths addObject:[NSIndexPath indexPathForItem:i inSection:0]];
-            }
-            [self.collectionView insertItemsAtIndexPaths:indesPaths.copy];
-        } completion:^(BOOL finished) {
-            NSUInteger totalCount = self.collectionViewControllerDataSourceDalegate.sampleData.count;
-            [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:totalCount / 2 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
-        }];
-    });
+//    
+//    
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        
+//        [self.collectionView performBatchUpdates:^{
+//            NSInteger initialCount = self.collectionViewControllerDataSourceDalegate.sampleData.count;
+//            while (self.collectionViewControllerDataSourceDalegate.sampleData.count < 120) {
+//                self.collectionViewControllerDataSourceDalegate.sampleData = [self.collectionViewControllerDataSourceDalegate.sampleData arrayByAddingObjectsFromArray:self.collectionViewControllerDataSourceDalegate.sampleData].mutableCopy;
+//            }
+//            NSMutableArray *indesPaths = @[].mutableCopy;
+//            for (NSInteger i = initialCount; i < self.collectionViewControllerDataSourceDalegate.sampleData.count; i++) {
+//                [indesPaths addObject:[NSIndexPath indexPathForItem:i inSection:0]];
+//            }
+//            [self.collectionView insertItemsAtIndexPaths:indesPaths.copy];
+//        } completion:^(BOOL finished) {
+//            NSUInteger totalCount = self.collectionViewControllerDataSourceDalegate.sampleData.count;
+//            [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:totalCount / 2 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+//        }];
+//    });
 
 }
 

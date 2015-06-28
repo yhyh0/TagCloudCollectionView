@@ -20,28 +20,11 @@ static NSString *KeyR = @"KeyR";
 static NSString * const reuseIdentifier = @"Cell";
 
 
-//- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-//    self = [super initWithCollectionViewLayout:[UICollectionViewFlowLayout new]];
-//    return self;
-//}
-//
-
 - (instancetype)init {
     self = [super init];
     self.sampleData = @[ @{KeyR:@110}, @{KeyR:@90}, @{KeyR:@105}, @{KeyR:@88}, @{KeyR:@90}, @{KeyR:@100}].mutableCopy;
     return self;
 }
-
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 #pragma mark <UICollectionViewDataSource>
 

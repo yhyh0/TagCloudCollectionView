@@ -26,19 +26,16 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
     [self setUpInitialValuesIfNeeded];
     NSUInteger totalItemCount = [self.collectionView numberOfItemsInSection:0];
     
-    NSMutableArray *mutableLayoutAttributes = @[].mutableCopy;
     for (NSInteger i = self.layoutAttributes.count; i < totalItemCount; i++) {
         NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i
                                                     inSection:0];
         CGSize itemSize = [self.dataSource collectionViewLayout:self
                                            itemSizeForIndexPath:indexPath];
         CGRect itemFrame = CGRectMake(i % 2 ? -.01f : .01f, .0f, itemSize.width, itemSize.height);
-        NSMutableArray *edges = i % 2 ? self.leftEdges : self.rightEdges;
         
-        [self updateItemCellFrame:&itemFrame fittingEdges:edges];
+        [self updateItemCellFrame:&itemFrame];
         [self updateEdgesWithNewItemFrame:itemFrame];
         UICollectionViewLayoutAttributes *newAttributes = [self addLayoutAttributesWithIndexPath:indexPath itemFrame:itemFrame];
-        [mutableLayoutAttributes addObject:newAttributes];
     }
     [self makeShiftedLayoutAttributes];
 }
@@ -89,7 +86,7 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
     }
 }
 
-- (void)moveNewFrameToAvoidOverlayWithStartingY:(int)y outNewFrame:(CGRect *)newFrame_p edges:(NSArray *)edges {
+- (void)moveNewFrameToAvoidOverlayWithStartingY:(int)y outNewFrame:(CGRect *)newFrame_p {
     for (int movingY = y + MARGIN; movingY < (y + newFrame_p->size.height + 2 * MARGIN); movingY++) {
         CGFloat circleEdgeDistance = [self circleEdgeDistanceAtY:movingY withItemFrame:*newFrame_p];
         
@@ -117,7 +114,7 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
     return leftMostEdgeX;
 }
 
-- (void)updateItemCellFrame:(CGRect *)framePointer fittingEdges:(NSArray *)edges{
+- (void)updateItemCellFrame:(CGRect *)framePointer {
     BOOL invalidPosition = YES;
     CGFloat maxY = self.collectionView.bounds.size.height - framePointer->size.height - 2 * MARGIN;
     
@@ -126,7 +123,7 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
         CGRect newFrame = *framePointer;
         newFrame.origin.y = y;
 
-        [self moveNewFrameToAvoidOverlayWithStartingY:y outNewFrame:&newFrame edges:edges];
+        [self moveNewFrameToAvoidOverlayWithStartingY:y outNewFrame:&newFrame];
 
         if (invalidPosition ||
             fabs(newFrame.origin.x) < fabs(currentBestPosition.origin.x)) {
