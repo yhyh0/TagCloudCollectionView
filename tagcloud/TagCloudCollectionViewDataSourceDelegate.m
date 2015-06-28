@@ -28,7 +28,7 @@ static NSString * const reuseIdentifier = @"Cell";
 
 - (instancetype)init {
     self = [super init];
-    self.sampleData = @[ @{KeyR:@70}, @{KeyR:@90}, @{KeyR:@50}, @{KeyR:@100}, @{KeyR:@70}, @{KeyR:@60}].mutableCopy;
+    self.sampleData = @[ @{KeyR:@70}, @{KeyR:@90}, @{KeyR:@110}, @{KeyR:@100}, @{KeyR:@70}, @{KeyR:@80}].mutableCopy;
     return self;
 }
 
@@ -56,7 +56,9 @@ static NSString * const reuseIdentifier = @"Cell";
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
-    // Configure the cell
+    if (indexPath.item % 2 == 1) {
+//        cell.hidden = YES;
+    }
     
     return cell;
 }
