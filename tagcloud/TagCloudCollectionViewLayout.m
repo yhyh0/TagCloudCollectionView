@@ -157,7 +157,7 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
         int actualY = (int)ceil(frame.origin.y) + movingYInItemRange;
         CGFloat circleEdgeDistance = [self circleEdgeDistanceAtY:actualY withItemFrame:frame];
 
-        if (frame.origin.x < .0f) { //left side, possible to pass y-axis
+        if (frame.origin.x < .0f) { //left side, possible to across y-axis
             CGFloat leftCircleEdgeX = frame.origin.x + circleEdgeDistance;
             if (leftCircleEdgeX < [self.leftEdges[actualY] floatValue]) {
                 self.leftEdges[actualY] = @(leftCircleEdgeX);
