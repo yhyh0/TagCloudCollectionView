@@ -30,7 +30,7 @@
     // Do any additional setup after loading the view.
     
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
         [self.collectionView performBatchUpdates:^{
             NSInteger initialCount = self.collectionViewControllerDataSourceDalegate.sampleData.count;
@@ -42,7 +42,10 @@
                 [indesPaths addObject:[NSIndexPath indexPathForItem:i inSection:0]];
             }
             [self.collectionView insertItemsAtIndexPaths:indesPaths.copy];
-        } completion:nil];
+        } completion:^(BOOL finished) {
+            NSUInteger totalCount = self.collectionViewControllerDataSourceDalegate.sampleData.count;
+            [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:totalCount / 2 inSection:0] atScrollPosition:UICollectionViewScrollPositionCenteredHorizontally animated:NO];
+        }];
     });
 
 }

@@ -8,7 +8,7 @@
 
 #import "TagCloudCollectionViewLayout.h"
 
-static const CGFloat MARGIN = .0f;
+static const CGFloat MARGIN = .0f; //Deprecated. Don't use it, set up margins in your cell views instead.
 static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
 
 @interface TagCloudCollectionViewLayout ()
@@ -123,7 +123,6 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
     
     CGRect currentBestPosition;
     for (int y = 0; y < maxY; y++) {
-        CGFloat yWithMaxXEdge;        
         CGRect newFrame = *framePointer;
         newFrame.origin.y = y;
 
