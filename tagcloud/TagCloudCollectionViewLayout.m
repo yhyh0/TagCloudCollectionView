@@ -8,7 +8,7 @@
 
 #import "TagCloudCollectionViewLayout.h"
 
-static const CGFloat MARGIN = 10.f;
+static const CGFloat MARGIN = .0f;
 static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
 
 @interface TagCloudCollectionViewLayout ()
@@ -79,7 +79,6 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
         self.rightEdges = @[].mutableCopy;
         for (int i = 0; i < height; i++) {
             [self.rightEdges addObject:@(0)];
-            
         }
     }
     if (!self.leftEdges) {
@@ -90,12 +89,13 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
     }
 }
 
-- (CGFloat)maxEdgeXInItemRangeWithItemSize:(CGSize)itemSize startingY:(int)startingY edges:(NSArray *)edges{
+- (CGFloat)maxEdgeXInItemRangeWithItemSize:(CGSize)itemSize startingY:(int)startingY edges:(NSArray *)edges endingY:(CGFloat *)endingY {
     CGFloat maxEdgeXInItemRange = .0f;
-    for (int movingYInItemRange = startingY; movingYInItemRange < (startingY + itemSize.height + 2 * MARGIN); movingYInItemRange++) {
-        CGFloat edgeX = [edges[movingYInItemRange] floatValue];
+    for (int movingY = startingY; movingY < (startingY + itemSize.height + 2 * MARGIN); movingY++) {
+        CGFloat edgeX = [edges[movingY] floatValue];
         if (fabs(edgeX) > fabs(maxEdgeXInItemRange)) {
             maxEdgeXInItemRange = edgeX;
+            *endingY = movingY;
         }
     }
     return maxEdgeXInItemRange;
@@ -104,28 +104,93 @@ static const CGFloat SCROLLING_SLOW_DOWN_RATE = 1/4.f;
 - (void)updateItemCellFrame:(CGRect *)framePointer fittingEdges:(NSArray *)edges{
     CGFloat maxY = self.collectionView.bounds.size.height - framePointer->size.height - 2 * MARGIN;
     for (int y = 0; y < maxY; y++) {
-        CGFloat maxEdgeXInItemRange = [self maxEdgeXInItemRangeWithItemSize:framePointer->size startingY:y edges:edges];
+        CGFloat yWithMaxXEdge;
+        
+        CGFloat maxEdgeXInItemRange = [self maxEdgeXInItemRangeWithItemSize:framePointer->size startingY:y edges:edges endingY:&yWithMaxXEdge];
+        CGRect newFrame = *framePointer;
+        CGRect *newFramePointer = &newFrame;
+        newFrame.origin.y = y;
+        
         if (framePointer->origin.x < .0f) { //left side
-            CGFloat currentItemMinX = framePointer->origin.x + MARGIN + framePointer->size.width;
-            if (maxEdgeXInItemRange > currentItemMinX + MARGIN + framePointer->size.width) {
-                framePointer->origin.x = maxEdgeXInItemRange - MARGIN - framePointer->size.width;
-                framePointer->origin.y = y + MARGIN;
+            CGFloat bestGuessItemOriginX = maxEdgeXInItemRange + [self circleEdgeDistanceAtY:yWithMaxXEdge withItemFrame:*framePointer];
+            if (bestGuessItemOriginX > -framePointer->size.width) {
+                bestGuessItemOriginX = -framePointer->size.width;
+            }
+            newFramePointer->origin.x = bestGuessItemOriginX;
+            for (int movingY = y + MARGIN; movingY < (y + newFramePointer->size.height + 2 * MARGIN); movingY++) {
+                CGFloat edgeX = [edges[movingY] floatValue];
+                CGFloat circleEdgeDistance = [self circleEdgeDistanceAtY:movingY withItemFrame:*newFramePointer];
+                
+                CGFloat currentItemEdgeX = newFramePointer->origin.x < .0f ? newFramePointer->origin.x + newFramePointer->size.width - circleEdgeDistance : newFramePointer->origin.x + circleEdgeDistance;
+                
+                if (fabs(edgeX) > fabs(currentItemEdgeX)) {
+                    if (newFramePointer->origin.x < .0f) {
+                        newFramePointer->origin.x = edgeX + circleEdgeDistance - newFramePointer->size.width;
+                    } else {
+                        newFramePointer->origin.x = edgeX - circleEdgeDistance;
+                    }
+                    newFramePointer->origin.y = y + MARGIN;
+                }
+            }
+            
+            if (y == 0 || newFrame.origin.x > framePointer->origin.x) {
+                framePointer->origin.x = newFrame.origin.x;
+                framePointer->origin.y = newFrame.origin.y;
             }
         } else {
-            CGFloat currentItemMinX = framePointer->origin.x - MARGIN;
-            if (maxEdgeXInItemRange < currentItemMinX) {
-                framePointer->origin.x = maxEdgeXInItemRange + MARGIN;
-                framePointer->origin.y = y + MARGIN;
+            CGFloat bestGuessItemOriginX = maxEdgeXInItemRange - [self circleEdgeDistanceAtY:yWithMaxXEdge withItemFrame:*framePointer];
+            if (bestGuessItemOriginX < .0f) {
+                bestGuessItemOriginX = .0f;
+            }
+            newFramePointer->origin.x = bestGuessItemOriginX;
+            for (int movingY = y + MARGIN; movingY < (y + newFramePointer->size.height + 2 * MARGIN); movingY++) {
+                CGFloat edgeX = [edges[movingY] floatValue];
+                CGFloat circleEdgeDistance = [self circleEdgeDistanceAtY:movingY withItemFrame:*newFramePointer];
+                
+                CGFloat currentItemEdgeX = newFramePointer->origin.x < .0f ? newFramePointer->origin.x + newFramePointer->size.width - circleEdgeDistance : newFramePointer->origin.x + circleEdgeDistance;
+                
+                if (fabs(edgeX) > fabs(currentItemEdgeX)) {
+                    if (newFramePointer->origin.x < .0f) {
+                        newFramePointer->origin.x = edgeX + circleEdgeDistance - newFramePointer->size.width;
+                    } else {
+                        newFramePointer->origin.x = edgeX - circleEdgeDistance;
+                    }
+                    newFramePointer->origin.y = y + MARGIN;
+                }
+            }
+            
+            if (y == 0 || newFrame.origin.x < framePointer->origin.x) {
+                framePointer->origin.x = newFrame.origin.x;
+                framePointer->origin.y = newFrame.origin.y;
             }
         }
-        
     }
 }
 
+- (CGFloat)circleEdgeDistanceAtY:(CGFloat)y withItemFrame:(CGRect)itemFrame {
+    CGFloat r = itemFrame.size.width / 2.f;
+    CGFloat r_2 = pow(r, 2);
+    CGFloat yWithInItem = y - itemFrame.origin.y;
+    CGFloat shortEdge;
+    if (y > r) {
+        shortEdge = yWithInItem - r;
+    } else {
+        shortEdge = r - yWithInItem;
+    }
+    CGFloat xWithInItem = r - sqrt(r_2 - pow(shortEdge, 2));
+    return xWithInItem;
+}
+
 - (void)updateEdges:(NSMutableArray *)mutableEdges withNewItemFrame:(CGRect)frame {
-    CGFloat newX = [self maxXForItemFrame:frame];
     for (int movingYInItemRange = 0; movingYInItemRange < frame.size.height; movingYInItemRange++) {
-        mutableEdges[(int)ceil(frame.origin.y) + movingYInItemRange] = @(newX);
+        int actualY = (int)ceil(frame.origin.y) + movingYInItemRange;
+        CGFloat maxX;
+        if (frame.origin.x < .0f) {
+            maxX = frame.origin.x + [self circleEdgeDistanceAtY:actualY withItemFrame:frame];
+        } else {
+            maxX = frame.origin.x + frame.size.width - [self circleEdgeDistanceAtY:actualY withItemFrame:frame];
+        }
+        mutableEdges[actualY] = @(maxX);
     }
     [self updateMaxEdgesWithItemFrame:frame];
 }

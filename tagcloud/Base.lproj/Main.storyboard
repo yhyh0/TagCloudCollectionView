@@ -25,22 +25,23 @@
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="66" height="58"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="circle" translatesAutoresizingMaskIntoConstraints="NO" id="gUu-5F-G6f">
-                                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                                    <rect key="frame" x="12" y="8" width="42" height="42"/>
                                                 </imageView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <constraints>
-                                            <constraint firstItem="gUu-5F-G6f" firstAttribute="leading" secondItem="wV2-PK-2SA" secondAttribute="leadingMargin" constant="-8" id="2cp-Lo-ycI"/>
-                                            <constraint firstAttribute="bottomMargin" secondItem="gUu-5F-G6f" secondAttribute="bottom" constant="-8" id="6B2-hR-eQf"/>
-                                            <constraint firstItem="gUu-5F-G6f" firstAttribute="top" secondItem="wV2-PK-2SA" secondAttribute="topMargin" constant="-8" id="HBB-vJ-Hgo"/>
-                                            <constraint firstAttribute="trailingMargin" secondItem="gUu-5F-G6f" secondAttribute="trailing" constant="-8" id="IaO-ck-paO"/>
+                                            <constraint firstItem="gUu-5F-G6f" firstAttribute="leading" secondItem="wV2-PK-2SA" secondAttribute="leadingMargin" constant="4" id="2cp-Lo-ycI"/>
+                                            <constraint firstAttribute="bottomMargin" secondItem="gUu-5F-G6f" secondAttribute="bottom" id="6B2-hR-eQf"/>
+                                            <constraint firstItem="gUu-5F-G6f" firstAttribute="top" secondItem="wV2-PK-2SA" secondAttribute="topMargin" id="HBB-vJ-Hgo"/>
+                                            <constraint firstAttribute="trailingMargin" secondItem="gUu-5F-G6f" secondAttribute="trailing" constant="4" id="IaO-ck-paO"/>
                                         </constraints>
+                                        <size key="customSize" width="66" height="58"/>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>

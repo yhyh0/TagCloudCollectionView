@@ -34,7 +34,7 @@
         
         [self.collectionView performBatchUpdates:^{
             NSInteger initialCount = self.collectionViewControllerDataSourceDalegate.sampleData.count;
-            while (self.collectionViewControllerDataSourceDalegate.sampleData.count < 40) {
+            while (self.collectionViewControllerDataSourceDalegate.sampleData.count < 80) {
                 self.collectionViewControllerDataSourceDalegate.sampleData = [self.collectionViewControllerDataSourceDalegate.sampleData arrayByAddingObjectsFromArray:self.collectionViewControllerDataSourceDalegate.sampleData].mutableCopy;
             }
             NSMutableArray *indesPaths = @[].mutableCopy;
